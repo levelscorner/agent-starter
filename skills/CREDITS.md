@@ -15,6 +15,8 @@ Every skill copied from another project keeps its licence file in its folder. Ve
 | break-ui | https://github.com/emilkowalski/skills | MIT | 2d22863 | no |
 | find-skills | https://github.com/vercel-labs/skills | MIT | 533c7df | no |
 | karpathy-coding | ours, after https://github.com/forrestchang/andrej-karpathy-skills (no licence, so nothing copied) | MIT (ours) | 1.0 | written by us |
+| agent-starter-onboard | ours | MIT (ours) | 1.0 | written by us |
+| agent-starter-status | ours | MIT (ours) | 1.0 | written by us |
 
 ## Ideas borrowed into rules and skills
 

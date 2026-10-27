@@ -30,7 +30,8 @@ done
 
 # --- Skills: front matter and a credit line each ---
 for s in i-have-adhd antislop antislop-code antislop-copywriting antislop-human \
-         antislop-layoutmobile antislop-ui karpathy-coding emil-design-eng break-ui find-skills; do
+         antislop-layoutmobile antislop-ui karpathy-coding emil-design-eng break-ui find-skills \
+         agent-starter-onboard agent-starter-status; do
   [ -d "skills/$s" ] || fail "missing skill folder skills/$s"
 done
 for d in skills/*/; do
@@ -54,6 +55,16 @@ grep -q 'agent-starter' templates/repo/AGENTS.md 2>/dev/null || fail "templates/
 grep -q 'gh repo create' NEW-REPO.md 2>/dev/null || fail "NEW-REPO.md must show the gh repo create command"
 grep -q 'templates/repo' NEW-REPO.md 2>/dev/null || fail "NEW-REPO.md must copy templates/repo"
 
+# --- Dated corrections: every entry starts with a date ---
+k=knowledge/what-models-get-wrong.md
+if [ -f "$k" ]; then
+  undated=$(grep -E '^- ' "$k" | grep -v -E '^- \*\*[0-9]{4}-[0-9]{2}-[0-9]{2}\*\*' | head -1)
+  [ -z "$undated" ] || fail "$k has an undated entry: $undated"
+else
+  fail "missing $k"
+fi
+[ -f scripts/status.sh ] || fail "missing scripts/status.sh"
+
 # --- rulesync: pinned, never deletes, generates for every tool ---
 grep -q '"rulesync": "[0-9]' package.json 2>/dev/null || fail "rulesync must be pinned to an exact version in package.json"
 for c in rulesync.jsonc rulesync.cursor.jsonc; do
@@ -71,6 +82,10 @@ if [ "${SKIP_SYNC:-0}" != "1" ] && [ -d node_modules/rulesync ]; then
   npx --no-install rulesync generate -s -c rulesync.cursor.jsonc -o "$repo" >/dev/null 2>&1 || fail "rulesync cursor generate failed"
   [ -f "$repo/.cursor/rules/how-we-talk.mdc" ] || fail "rulesync did not write .cursor/rules/how-we-talk.mdc"
   [ "$(cat "$repo/AGENTS.md")" = "keep me" ] || fail "rulesync cursor run changed the repo's AGENTS.md"
+  # status.sh: up to date right after a sync, out of date after a source edit
+  HOME="$home" bash scripts/status.sh >/dev/null 2>&1 || fail "status.sh says out of date right after a sync"
+  printf '\n' >> "$home/.claude/skills/antislop/SKILL.md"
+  HOME="$home" bash scripts/status.sh >/dev/null 2>&1 && fail "status.sh missed a changed skill"
   rm -rf "$home" "$repo"
 elif [ "${SKIP_SYNC:-0}" != "1" ]; then
   fail "run npm install first (or SKIP_SYNC=1)"
