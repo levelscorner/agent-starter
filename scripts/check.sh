@@ -19,6 +19,15 @@ for f in README.md AGENTS.md CLAUDE.md LICENSE .gitignore; do
 done
 [ "$(cat CLAUDE.md 2>/dev/null)" = "@AGENTS.md" ] || fail "CLAUDE.md must be exactly @AGENTS.md"
 
+# --- Rules: present, short, linked from AGENTS.md ---
+for r in how-we-talk how-we-code how-we-research git security; do
+  f="rules/$r.md"
+  if [ ! -f "$f" ]; then fail "missing $f"; continue; fi
+  lines=$(wc -l < "$f" | tr -d ' ')
+  [ "$lines" -le 120 ] || fail "$f has $lines lines (max 120)"
+  grep -q "($f)" AGENTS.md || fail "AGENTS.md does not link $f"
+done
+
 # --- No em dashes in our own writing ---
 while IFS= read -r f; do
   grep -q $'\xe2\x80\x94' "$f" && fail "em dash in $f"
