@@ -32,12 +32,23 @@ Write a rule once here. A sync tool (rulesync) turns it into each agent's own fi
 
 ```bash
 npm install
-npx rulesync generate
+npx rulesync generate                                       # every tool, in your home folder
+npx rulesync generate -c rulesync.cursor.jsonc -o ../my-repo   # Cursor rules, per repo
 ```
 
-This writes `CLAUDE.md` and `.claude/skills/` for Claude Code, `AGENTS.md` and `.agents/skills/` for Codex, Cursor, Grok and Hermes, `.cursor/rules/` for Cursor and `.grok/` for Grok Build.
+The first command writes the shared rules and skills into each tool's user folder:
 
-Never run rulesync with `--delete` in global mode. It removes every skill it did not create.
+| Tool | Rules | Skills |
+|---|---|---|
+| Claude Code | `~/.claude/CLAUDE.md`, `~/.claude/rules/` | `~/.claude/skills/` |
+| Codex | `~/.codex/AGENTS.md` | `~/.agents/skills/` |
+| Grok Build | `~/.grok/AGENTS.md`, `~/.grok/rules/` | `~/.grok/skills/` |
+| Cursor | per repo, second command | `~/.cursor/skills/` |
+| Hermes | reads the repo's AGENTS.md | `~/.hermes/skills/` |
+
+It never touches a repo's own `AGENTS.md`. Cursor cannot read user-level rules from a file, so its rules go into each repo's `.cursor/rules/` with the second command.
+
+Both configs set `"delete": false`. Keep it that way: with delete on, rulesync removes every skill it did not create.
 
 ## Rules of this repo
 

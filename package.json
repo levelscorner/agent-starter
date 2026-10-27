@@ -1,0 +1,8 @@
+{
+  "name": "agent-starter",
+  "private": true,
+  "description": "Shared rules and skills for every AI coding agent",
+  "license": "MIT",
+  "engines": { "node": ">=22.22" },
+  "devDependencies": { "rulesync": "43.1.1" }
+}

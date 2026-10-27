@@ -1,3 +1,10 @@
+---
+root: false
+targets: ["*"]
+description: "Secrets, input checks, public versus private"
+globs: ["**/*"]
+---
+
 # Security
 
 ## Secrets

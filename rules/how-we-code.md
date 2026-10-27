@@ -1,3 +1,10 @@
+---
+root: false
+targets: ["*"]
+description: "How we write and change code: simplest complete change, checks, speed"
+globs: ["**/*"]
+---
+
 # How we code
 
 Keep it simple. The best code is code nobody had to write. Technical depth is fine where the product needs it, but explain it as simply as the topic allows.

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://github.com/dyoshikawa/rulesync/releases/latest/download/config-schema.json",
+  // Cursor cannot take user-level rules from a file, so its rules go into each repo.
+  // This writes only .cursor/rules/ in the repo you name with -o. It never touches AGENTS.md.
+  "targets": ["cursor"],
+  "features": ["rules"],
+  "delete": false,
+  "global": false,
+  "verbose": false
+}

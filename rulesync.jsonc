@@ -1,0 +1,12 @@
+{
+  "$schema": "https://github.com/dyoshikawa/rulesync/releases/latest/download/config-schema.json",
+  // Every agent we use. Rules and skills only.
+  "targets": ["claudecode", "codexcli", "cursor", "grokcli", "hermesagent"],
+  "features": ["rules", "skills"],
+  // Never delete files rulesync did not make. Keep this false.
+  "delete": false,
+  // Shared rules go to each tool's user folder (~/.claude, ~/.codex, ...),
+  // so a repo's own hand-written AGENTS.md is never overwritten.
+  "global": true,
+  "verbose": false
+}

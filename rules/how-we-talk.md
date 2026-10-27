@@ -1,3 +1,10 @@
+---
+root: false
+targets: ["*"]
+description: "How we talk to people: answer first, short lists, labelled claims"
+globs: ["**/*"]
+---
+
 # How we talk
 
 These rules apply to every reply to a person: in chat, in a PR, in an issue, in a doc.

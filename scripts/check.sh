@@ -54,6 +54,28 @@ grep -q 'agent-starter' templates/repo/AGENTS.md 2>/dev/null || fail "templates/
 grep -q 'gh repo create' NEW-REPO.md 2>/dev/null || fail "NEW-REPO.md must show the gh repo create command"
 grep -q 'templates/repo' NEW-REPO.md 2>/dev/null || fail "NEW-REPO.md must copy templates/repo"
 
+# --- rulesync: pinned, never deletes, generates for every tool ---
+grep -q '"rulesync": "[0-9]' package.json 2>/dev/null || fail "rulesync must be pinned to an exact version in package.json"
+for c in rulesync.jsonc rulesync.cursor.jsonc; do
+  grep -q '"delete": false' "$c" 2>/dev/null || fail "$c must set \"delete\": false"
+done
+if [ "${SKIP_SYNC:-0}" != "1" ] && [ -d node_modules/rulesync ]; then
+  home=$(mktemp -d); repo=$(mktemp -d)
+  printf 'keep me\n' > "$repo/AGENTS.md"
+  HOME="$home" npx --no-install rulesync generate -s >/dev/null 2>&1 || fail "rulesync global generate failed"
+  for p in .claude/CLAUDE.md .claude/rules/how-we-talk.md .claude/skills/i-have-adhd/SKILL.md \
+           .codex/AGENTS.md .agents/skills/antislop/SKILL.md .grok/AGENTS.md .grok/skills/karpathy-coding/SKILL.md \
+           .cursor/skills/find-skills/SKILL.md .hermes/skills/break-ui/SKILL.md; do
+    [ -e "$home/$p" ] || fail "rulesync did not write ~/$p"
+  done
+  npx --no-install rulesync generate -s -c rulesync.cursor.jsonc -o "$repo" >/dev/null 2>&1 || fail "rulesync cursor generate failed"
+  [ -f "$repo/.cursor/rules/how-we-talk.mdc" ] || fail "rulesync did not write .cursor/rules/how-we-talk.mdc"
+  [ "$(cat "$repo/AGENTS.md")" = "keep me" ] || fail "rulesync cursor run changed the repo's AGENTS.md"
+  rm -rf "$home" "$repo"
+elif [ "${SKIP_SYNC:-0}" != "1" ]; then
+  fail "run npm install first (or SKIP_SYNC=1)"
+fi
+
 # --- No em dashes in our own writing ---
 while IFS= read -r f; do
   grep -q $'\xe2\x80\x94' "$f" && fail "em dash in $f"

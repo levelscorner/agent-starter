@@ -1,3 +1,10 @@
+---
+root: false
+targets: ["*"]
+description: "How we look things up and cite them"
+globs: ["**/*"]
+---
+
 # How we research
 
 For any answer that depends on looking something up: docs, prices, repos, papers, videos, competitors.

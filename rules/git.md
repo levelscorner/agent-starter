@@ -1,3 +1,10 @@
+---
+root: false
+targets: ["*"]
+description: "Commits, pull requests, never deleting, task claims"
+globs: ["**/*"]
+---
+
 # Git
 
 ## Commits
