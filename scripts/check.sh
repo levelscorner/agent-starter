@@ -87,6 +87,14 @@ if [ "${SKIP_SYNC:-0}" != "1" ] && [ -d node_modules/rulesync ]; then
   printf '\n' >> "$home/.claude/skills/antislop/SKILL.md"
   HOME="$home" bash scripts/status.sh >/dev/null 2>&1 && fail "status.sh missed a changed skill"
   rm -rf "$home" "$repo"
+
+  # sync.sh never overwrites a personal file silently
+  home=$(mktemp -d); mkdir -p "$home/.claude"; printf 'my own rules\n' > "$home/.claude/CLAUDE.md"
+  HOME="$home" bash scripts/sync.sh >/dev/null 2>&1 && fail "sync.sh ran without --yes while it would overwrite files"
+  [ "$(cat "$home/.claude/CLAUDE.md")" = "my own rules" ] || fail "sync.sh without --yes changed ~/.claude/CLAUDE.md"
+  HOME="$home" bash scripts/sync.sh --yes >/dev/null 2>&1 || fail "sync.sh --yes failed"
+  grep -rqx 'my own rules' "$home/.agent-starter-backup" 2>/dev/null || fail "sync.sh --yes did not back up ~/.claude/CLAUDE.md"
+  rm -rf "$home"
 elif [ "${SKIP_SYNC:-0}" != "1" ]; then
   fail "run npm install first (or SKIP_SYNC=1)"
 fi
@@ -97,9 +105,30 @@ while IFS= read -r f; do
 done < <(own_files)
 
 # --- Nothing private or secret anywhere (public repo) ---
-private_hits=$(grep -rIl -E '/Users/|~/ws/|mycdb|nvapi-|sk-[A-Za-z0-9]{20}|ghp_[A-Za-z0-9]{20}|AKIA[0-9A-Z]{16}' \
+LEAK='/Users/|/home/[a-z]|~/ws/|mycdb|nvapi-|sk-[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{35}|BEGIN [A-Z ]*PRIVATE KEY|@gmail\.com'
+private_hits=$(grep -rIl -E "$LEAK" \
   --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.superpowers --exclude=check.sh . 2>/dev/null)
 [ -z "$private_hits" ] || fail "private path or secret in: $(echo $private_hits)"
+
+# The leak pattern must catch common key shapes. Fixtures are built at run time
+# so no key-shaped text is ever committed.
+fx=$(mktemp -d); trap 'rm -rf "$fx"' EXIT
+x20=$(printf 'x%.0s' $(seq 1 24)); x35=$(printf 'x%.0s' $(seq 1 35))
+for sample in "sk-ant-api03-$x20" "sk-proj-$x20" "github_pat_$x20" "ghp_$x20" "AIza$x35" \
+              "-----BEGIN RSA PRIVATE KEY-----" "/home/someone/notes" "someone@gmail.com"; do
+  printf '%s\n' "$sample" > "$fx/sample"
+  grep -q -E -e "$LEAK" "$fx/sample" || fail "leak pattern misses: ${sample:0:14}..."
+done
+
+# --- Commit history: no personal email ---
+if git rev-parse HEAD >/dev/null 2>&1; then
+  bad_ids=$(git log --format='%ae%n%ce' | grep -v -E 'users\.noreply\.github\.com$|^noreply@anthropic\.com$' | sort -u)
+  [ -z "$bad_ids" ] || fail "commit history carries a personal email: $bad_ids"
+fi
+
+# --- karpathy-coding credits its MIT source ---
+[ -f skills/karpathy-coding/LICENSE ] || fail "missing skills/karpathy-coding/LICENSE"
+grep -q -i 'no licence' skills/karpathy-coding/SKILL.md skills/CREDITS.md && fail "karpathy source is MIT; do not say it has no licence"
 
 if [ "$fails" -eq 0 ]; then echo "PASS: all checks"; exit 0; fi
 echo "$fails check(s) failed"; exit 1

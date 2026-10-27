@@ -11,8 +11,9 @@ Pick the case that matches, and do only those steps.
 
 1. Clone agent-starter and run `npm install` inside it.
 2. Run `bash scripts/status.sh` to see what is missing or old.
-3. Run `npx rulesync generate`. It writes the shared rules and skills into each tool's user folder and never deletes anything it did not make.
-4. Run `bash scripts/status.sh` again. It must print `UP TO DATE`.
+3. Run `bash scripts/sync.sh`. If it stops, it lists files you already have that the sync would replace (for example `~/.claude/CLAUDE.md`). Show that list to the person. Move anything they want to keep into agent-starter's `rules/`.
+4. Only with the person's yes, run `bash scripts/sync.sh --yes`. It backs up every replaced file to `~/.agent-starter-backup/<time>/`, then syncs.
+5. Run `bash scripts/status.sh` again. It must print `UP TO DATE`.
 
 ## A new repo
 

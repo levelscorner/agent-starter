@@ -14,7 +14,7 @@ Write a rule once here. A sync tool (rulesync) turns it into each agent's own fi
 1. Copy `templates/repo/` into your repo, or create a new repo from this template (see `NEW-REPO.md`).
 2. Fill in `README.md`, `AGENTS.md` and `STATE.md` for your project.
 3. Install rulesync: `npm install` in this repo (the version is pinned).
-4. Run `npx rulesync generate` to write each agent's files (see "Sync your tools" below).
+4. Run `bash scripts/sync.sh` to write each agent's files. It stops before replacing any file you already have (see "Sync your tools" below).
 5. For cloud bots that read no files (Grok Bot, ChatGPT dots), add one standing instruction: "Before any job, read AGENTS.md in this repo."
 
 ## What is in here
@@ -32,9 +32,12 @@ Write a rule once here. A sync tool (rulesync) turns it into each agent's own fi
 
 ```bash
 npm install
-npx rulesync generate                                       # every tool, in your home folder
+bash scripts/status.sh                                      # what a sync would change
+bash scripts/sync.sh                                        # every tool, in your home folder
 npx rulesync generate -c rulesync.cursor.jsonc -o ../my-repo   # Cursor rules, per repo
 ```
+
+**Warning:** the sync replaces `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md` and `~/.grok/AGENTS.md`. If you already have your own rules there, `sync.sh` lists them and stops. Move what you want to keep into this repo's `rules/`, then run `bash scripts/sync.sh --yes`. It backs every replaced file up to `~/.agent-starter-backup/<time>/` first.
 
 The first command writes the shared rules and skills into each tool's user folder:
 
@@ -46,7 +49,7 @@ The first command writes the shared rules and skills into each tool's user folde
 | Cursor | per repo, second command | `~/.cursor/skills/` |
 | Hermes | reads the repo's AGENTS.md | `~/.hermes/skills/` |
 
-It never touches a repo's own `AGENTS.md`. Cursor cannot read user-level rules from a file, so its rules go into each repo's `.cursor/rules/` with the second command.
+It never touches a repo's own `AGENTS.md`, and it never deletes a skill it did not make. Cursor cannot read user-level rules from a file, so its rules go into each repo's `.cursor/rules/` with the second command.
 
 Both configs set `"delete": false`. Keep it that way: with delete on, rulesync removes every skill it did not create.
 

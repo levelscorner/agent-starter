@@ -28,5 +28,5 @@ if [ "$stale" -eq 0 ]; then
   echo "UP TO DATE: every tool has the current rules and skills"
   exit 0
 fi
-echo "OUT OF DATE: $stale file(s). Run: npx rulesync generate"
+echo "OUT OF DATE: $stale file(s). Run: bash scripts/sync.sh"
 exit 1

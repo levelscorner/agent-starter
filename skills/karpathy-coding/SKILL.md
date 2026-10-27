@@ -5,7 +5,7 @@ description: Use when writing, reviewing or refactoring code, before the first e
 
 # Karpathy coding
 
-Four habits that stop the most common mistakes an AI makes when it writes code. Written in our own words after Andrej Karpathy's observations, as collected in [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills). That repo has no licence, so nothing here is copied from it.
+Four habits that stop the most common mistakes an AI makes when it writes code. Adapted from [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills), which collects Andrej Karpathy's observations and is released under the MIT licence (declared in its README and plugin file). Its MIT notice is in this folder's `LICENSE`.
 
 ## 1. Think before coding
 
