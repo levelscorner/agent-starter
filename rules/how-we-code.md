@@ -45,21 +45,30 @@ Take the first option that fully works:
 - No "done" without fresh evidence: the command you ran and what it printed.
 - "Done, not verified" is a different report from "done". Say which.
 
-## 5. Bugs
+## 5. Size, errors and tests
+
+- Functions under about 50 lines. Files usually 200 to 400 lines, 800 at most. Nesting 4 levels at most; use early returns.
+- Never swallow an error silently. Handle it, or let it rise with context. Messages shown to users say what to do; logs keep the detail.
+- For a bug fix or a new feature, write the failing test first, watch it fail, then make it pass.
+- Test names describe the behaviour ("returns empty list when nothing matches"). Arrange, act, assert.
+- Aim for tests that would catch a real bug, not for a coverage number.
+
+## 6. Bugs
 
 - Before editing, find every caller of the code you touch. Fix the root cause once, in the shared code.
 - After **2 failed fixes** that rest on the same belief, stop. Write the belief as a sentence that could be false, test it, and only then try a third fix.
 
-## 6. Speed: check it before every merge
+## 7. Speed: check it before every merge
 
 For every loop, query, regex and parser a change touches:
 
 - Name the input that grows and its worst case. If a user controls it, cap it where it comes in.
-- No worse than linear in that input, or the PR says why.
+- No worse than linear in that input, or the PR says why. Anything that grows with the whole deployment rather than with the caller is a finding even when it is linear.
 - No query inside a loop. Batch it.
 - No regex with nested or back-to-back `+` or `*` over user text.
 - No unbounded parse of user input: YAML aliases, JSON depth, archive size.
-- No blocking work in async code: sync database calls, password hashing, large file reads.
+- No blocking work in async code: sync database calls, password hashing, big regexes, large file reads.
+- Frontend: no fresh object passed to a memoised child on every render; no burst of requests on every mount.
 - **Prove it, do not argue it.** Time the path at n, 2n and 4n. Linear doubles; quadratic quadruples.
 - Report a timing with what you measured, what limited it, and how much it varied between runs. One run each side proves nothing.
 
@@ -76,4 +85,4 @@ For every loop, query, regex and parser a change touches:
 
 ## Credits
 
-In our own words, after [Andrej Karpathy's coding guidelines](https://github.com/forrestchang/andrej-karpathy-skills), [ponytail](https://github.com/DietrichGebert/ponytail) (MIT), [superpowers](https://github.com/obra/superpowers) (MIT), [gstack](https://github.com/garrytan/gstack) (MIT) and [caveman](https://github.com/JuliusBrussee/caveman) (Apache-2.0).
+In our own words, after [Andrej Karpathy's coding guidelines](https://github.com/forrestchang/andrej-karpathy-skills), [ponytail](https://github.com/DietrichGebert/ponytail) (MIT), [superpowers](https://github.com/obra/superpowers) (MIT), [gstack](https://github.com/garrytan/gstack) (MIT), [caveman](https://github.com/JuliusBrussee/caveman) (Apache-2.0) and [everything-claude-code](https://github.com/affaan-m/everything-claude-code) (MIT).

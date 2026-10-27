@@ -50,6 +50,7 @@ Label every claim that matters:
 
 - Open with one line: **ALLOW** or **BLOCK**.
 - Each finding answers four things: what goes wrong, why, the impact, the fix.
+- Grade each finding: **critical** (security hole or data loss: block), **high** (a real bug: fix before merge), **medium** (hard to maintain: fix if you can), **low** (style: optional).
 
 ## Questions
 

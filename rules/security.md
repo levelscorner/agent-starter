@@ -21,6 +21,9 @@ globs: ["**/*"]
 - Cap sizes where they enter: text length, list length, file size, nesting depth.
 - Never build SQL, shell commands or file paths by pasting user text together.
 - Paths that come from stored data are as untrusted as user input.
+- Escape anything user-written before it goes into a page. Never inject raw HTML.
+- Every endpoint that changes data has a rate limit, and forms that change data are protected against cross-site requests.
+- Error messages never leak secrets, stack traces or internal paths to users.
 
 ## Public and private
 

@@ -17,6 +17,7 @@ Every skill copied from another project keeps its licence file in its folder. Ve
 | karpathy-coding | adapted from https://github.com/forrestchang/andrej-karpathy-skills | MIT (declared in its README and plugin.json; notice in LICENSE here) | 2c60614 | adapted by us |
 | agent-starter-onboard | ours | MIT (ours) | 1.0 | written by us |
 | agent-starter-status | ours | MIT (ours) | 1.0 | written by us |
+| web-quality | adapted from https://github.com/affaan-m/everything-claude-code (rules/web) | MIT (notice in LICENSE here) | 25278e7 | adapted by us |
 
 ## Ideas borrowed into rules and skills
 
