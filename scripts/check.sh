@@ -28,6 +28,32 @@ for r in how-we-talk how-we-code how-we-research git security; do
   grep -q "($f)" AGENTS.md || fail "AGENTS.md does not link $f"
 done
 
+# --- Skills: front matter and a credit line each ---
+for s in i-have-adhd antislop antislop-code antislop-copywriting antislop-human \
+         antislop-layoutmobile antislop-ui karpathy-coding emil-design-eng break-ui find-skills; do
+  [ -d "skills/$s" ] || fail "missing skill folder skills/$s"
+done
+for d in skills/*/; do
+  [ -d "$d" ] || continue
+  s=$(basename "$d")
+  f="$d/SKILL.md"
+  if [ ! -f "$f" ]; then fail "missing $f"; continue; fi
+  head -20 "$f" | grep -q '^name:' || fail "$f has no name: front matter"
+  head -20 "$f" | grep -q '^description:' || fail "$f has no description: front matter"
+  grep -q "| $s |" skills/CREDITS.md 2>/dev/null || fail "skills/CREDITS.md has no row for $s"
+done
+[ -f skills/CHANGES.md ] || fail "missing skills/CHANGES.md"
+
+# --- Repo template and the one prompt ---
+for f in README.md AGENTS.md CLAUDE.md STATE.md docs/architecture.md archive/README.md; do
+  [ -f "templates/repo/$f" ] || fail "missing templates/repo/$f"
+done
+[ "$(cat templates/repo/CLAUDE.md 2>/dev/null)" = "@AGENTS.md" ] || fail "templates/repo/CLAUDE.md must be exactly @AGENTS.md"
+grep -q 'agent-starter' templates/repo/AGENTS.md 2>/dev/null || fail "templates/repo/AGENTS.md must point to agent-starter rules"
+[ -f NEW-REPO.md ] || fail "missing NEW-REPO.md"
+grep -q 'gh repo create' NEW-REPO.md 2>/dev/null || fail "NEW-REPO.md must show the gh repo create command"
+grep -q 'templates/repo' NEW-REPO.md 2>/dev/null || fail "NEW-REPO.md must copy templates/repo"
+
 # --- No em dashes in our own writing ---
 while IFS= read -r f; do
   grep -q $'\xe2\x80\x94' "$f" && fail "em dash in $f"
