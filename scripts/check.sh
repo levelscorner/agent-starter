@@ -31,7 +31,7 @@ done
 # --- Skills: front matter and a credit line each ---
 for s in i-have-adhd antislop antislop-code antislop-copywriting antislop-human \
          antislop-layoutmobile antislop-ui karpathy-coding emil-design-eng break-ui find-skills \
-         agent-starter-onboard agent-starter-status; do
+         agent-starter-onboard agent-starter-status web-quality; do
   [ -d "skills/$s" ] || fail "missing skill folder skills/$s"
 done
 for d in skills/*/; do

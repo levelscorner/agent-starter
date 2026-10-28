@@ -3,6 +3,8 @@ root: false
 targets: ["*"]
 description: "How we talk to people: answer first, short lists, labelled claims"
 globs: ["**/*"]
+cursor:
+  alwaysApply: true
 ---
 
 # How we talk
@@ -48,8 +50,9 @@ Label every claim that matters:
 
 ## Reviews
 
-- Open with one line: **ALLOW** or **BLOCK**.
+- Open with one line: **ALLOW** or **BLOCK**. BLOCK if any finding is critical or high.
 - Each finding answers four things: what goes wrong, why, the impact, the fix.
+- Grade each finding: **critical** (security hole or data loss: block), **high** (a real bug: fix before merge), **medium** (hard to maintain: fix if you can), **low** (style: optional).
 
 ## Questions
 

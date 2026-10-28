@@ -3,6 +3,8 @@ root: true
 targets: ["*"]
 description: "Shared rules from agent-starter: how we talk, code, research, use git and stay safe"
 globs: ["**/*"]
+cursor:
+  alwaysApply: true
 ---
 
 # Shared rules (from agent-starter)
