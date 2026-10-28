@@ -48,7 +48,6 @@ Hard numbers for front-end work. For how a page should look, use the antislop sk
 
 - A Content Security Policy with a per-request nonce for scripts, not `unsafe-inline`.
 - `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, a strict `Referrer-Policy`, and a `Permissions-Policy` that turns off camera, microphone and location unless needed.
-- Sanitize any user HTML with a vetted sanitizer before rendering it.
 
 ## Test at these widths
 

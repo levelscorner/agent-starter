@@ -49,7 +49,7 @@ Take the first option that fully works:
 
 - Functions under about 50 lines. Files usually 200 to 400 lines, 800 at most. Nesting 4 levels at most; use early returns.
 - Never swallow an error silently. Handle it, or let it rise with context. Messages shown to users say what to do; logs keep the detail.
-- For a bug fix or a new feature, write the failing test first, watch it fail, then make it pass.
+- For a bug fix, write a test that fails first, watch it fail, then make it pass.
 - Test names describe the behaviour ("returns empty list when nothing matches"). Arrange, act, assert.
 - Aim for tests that would catch a real bug, not for a coverage number.
 
