@@ -3,6 +3,8 @@ root: false
 targets: ["*"]
 description: "How we look things up and cite them"
 globs: ["**/*"]
+cursor:
+  alwaysApply: true
 ---
 
 # How we research
@@ -20,7 +22,7 @@ For any answer that depends on looking something up: docs, prices, repos, papers
 ## How to report
 
 - Lead with the answer, then the evidence.
-- Label each claim: measured, seen, research (link and date), guess, or not known. See [how-we-talk.md](how-we-talk.md).
+- Label each claim: measured, seen, research (link and date), guess, or not known. See [how-we-talk](https://github.com/levelscorner/agent-starter/blob/main/rules/how-we-talk.md).
 - Prefer the primary source (the vendor's docs, the repo, the paper) over a blog about it.
 - Numbers come with where they came from. A number without a source is a guess.
 - If two sources disagree, show both and say which you trust and why.
@@ -28,7 +30,7 @@ For any answer that depends on looking something up: docs, prices, repos, papers
 ## Tools change fast
 
 - Before saying a tool "can" or "cannot" do something, check its current docs. Models carry stale facts.
-- When you find a fact models keep getting wrong, add a dated line to `knowledge/what-models-get-wrong.md`.
+- When you find a fact models keep getting wrong, add a dated line to [what-models-get-wrong.md](https://github.com/levelscorner/agent-starter/blob/main/knowledge/what-models-get-wrong.md) in agent-starter.
 
 ## Credits
 

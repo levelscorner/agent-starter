@@ -3,6 +3,8 @@ root: false
 targets: ["*"]
 description: "How we talk to people: answer first, short lists, labelled claims"
 globs: ["**/*"]
+cursor:
+  alwaysApply: true
 ---
 
 # How we talk

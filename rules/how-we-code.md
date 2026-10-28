@@ -3,6 +3,8 @@ root: false
 targets: ["*"]
 description: "How we write and change code: simplest complete change, checks, speed"
 globs: ["**/*"]
+cursor:
+  alwaysApply: true
 ---
 
 # How we code
