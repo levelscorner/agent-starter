@@ -7,6 +7,7 @@ Read this first. It is a table of contents, not the whole book.
 - [rules/how-we-talk.md](rules/how-we-talk.md): how to talk to people
 - [rules/how-we-code.md](rules/how-we-code.md): how to write and change code
 - [rules/how-we-research.md](rules/how-we-research.md): how to look things up and cite them
+- [rules/how-we-plan.md](rules/how-we-plan.md): the six documents and one checklist for every new feature
 - [rules/git.md](rules/git.md): commits, pull requests, never deleting
 - [rules/security.md](rules/security.md): secrets, input, public versus private
 
