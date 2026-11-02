@@ -35,6 +35,14 @@ Every later triage of the same feature starts again at step 1: read the document
 - Put the six in one folder per feature, named `plans/<date>-<feature>/`, in the repo that holds the project's docs. If the project has no docs repo yet, ask where.
 - The folder's `README.md` holds the triage table: each document, its state before, and what changed.
 
+### Save the explanation, not just the decision
+
+- Save each feature or product-topic discussion in the relevant project docs before ending the turn. Keep lifecycle detail in the app-flow document and link it from the feature README so later sessions can find it.
+- Include plain-English flowcharts from the first user action to the final outcome. Cover success, failure, cancellation, timeout, retry, duplicate requests, partial completion, recovery and late results. Mark cases that do not apply and explain why.
+- For each branch, show what the user sees, who decides the outcome (user, app, external service or operator), what evidence permits that decision, and what happens next. When money is involved, show customer charges or credits separately from external service costs.
+- Use simple before-and-after examples, explain trade-offs, and keep detailed scenarios beside the diagrams. Name unresolved edge cases; do not imply that a diagram or review proves every case safe.
+- Keep source links and evidence dates with the explanation. Mark each choice as proposed, approved, rejected or superseded, and record what approval covers. A conversation, diagram or individual policy approval does not authorize the whole feature's implementation.
+
 ## 3. The checklist: one place
 
 - The checklist lives in that feature's `README.md`. It is the only list for the feature. Do not copy it into issues, chat or other files; link to it.
