@@ -21,6 +21,8 @@ cursor:
 - A change that alters behaviour updates its document in the same PR.
 - List what the change could make wrong in an `invalidates:` line: docs, public pages, other repos. Write `invalidates: none` after checking.
 - Before merge, run the speed check in [how-we-code](https://github.com/levelscorner/agent-starter/blob/main/rules/how-we-code.md).
+- Always squash-merge: `gh pr merge <n> --squash`, in every repo, even where the history shows merge commits. One PR becomes one commit on the main branch.
+- Squashing a PR that another open PR is based on breaks that child PR. Merge the base branch into the child's branch, point the child at the main branch, then squash the child.
 
 ## Never delete
 
