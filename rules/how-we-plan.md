@@ -43,12 +43,15 @@ Every later triage of the same feature starts again at step 1: read the document
 - Use simple before-and-after examples, explain trade-offs, and keep detailed scenarios beside the diagrams. Name unresolved edge cases; do not imply that a diagram or review proves every case safe.
 - Keep source links and evidence dates with the explanation. Mark each choice as proposed, approved, rejected or superseded, and record what approval covers. A conversation, diagram or individual policy approval does not authorize the whole feature's implementation.
 
-## 3. The checklist: one place
+## 3. The checklist: one to-do list per feature, worked through issues and PRs
 
-- The checklist lives in that feature's `README.md`. It is the only list for the feature. Do not copy it into issues, chat or other files; link to it.
+- Every feature has its folder with the six documents and one checklist in its `README.md`: the feature's to-do list. A feature without one is an incomplete setup; give it one before its next code change.
+- The checklist is the source. When work on a line starts, it gets one issue in the repo that holds the code. The line links the issue and the issue links the line. Do not keep a second list anywhere else.
+- One PR per issue. It is tested, the owner approves it, and it is squash-merged. It ticks its checklist line with the PR link and updates every document it changes (section 4).
 - Each item says what to do, which file or document it touches, and how we know it is done.
-- When a task is added, removed or changes, edit the checklist first, then do the work.
+- When a task is added, removed or changes, or a discussion decides something new, edit the six documents and the checklist first, then the issues, then do the work.
 - Tick items as they finish, so progress is visible.
+- The docs repo keeps one index of features: each one's status, its six documents and its to-do progress.
 
 ## 4. Keep them true
 
