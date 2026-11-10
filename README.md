@@ -21,7 +21,7 @@ Write a rule once here. A sync tool (rulesync) turns it into each agent's own fi
 
 | Folder | What it holds | When an agent reads it |
 |---|---|---|
-| `rules/` | Short house rules: how we talk, code, research, use git, stay safe | Every time |
+| `rules/` | Short house rules: how we talk, code, research, design, use git, stay safe | Every time |
 | `skills/` | Longer guides that load when a task needs them | When the task matches |
 | `templates/repo/` | The files every repo starts with | When a repo is created |
 | `knowledge/` | Dated corrections agents keep getting wrong | When the topic comes up |

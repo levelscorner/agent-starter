@@ -10,6 +10,7 @@ Read this first. It is a table of contents, not the whole book.
 - [rules/how-we-plan.md](rules/how-we-plan.md): the six documents and one checklist for every new feature
 - [rules/git.md](rules/git.md): commits, pull requests, never deleting
 - [rules/security.md](rules/security.md): secrets, input, public versus private
+- [rules/how-we-design.md](rules/how-we-design.md): the UI laws every screen follows, and how to check them
 
 ## Load when the task needs it
 
