@@ -153,6 +153,21 @@ class Headers(unittest.TestCase):
         finally:
             repo.close()
 
+    def test_required_can_drop_title_but_never_type(self):
+        repo = Repo({"m/some-note.md": "---\ntype: feedback\ndescription: x\n---\nBody.\n"},
+                    config='bundles = ["m"]\nrequired = ["type", "description"]\n')
+        try:
+            repo.run()
+            code, out = repo.run("--check")
+            self.assertEqual(code, 0, out)
+            self.assertIn("* [Some note](some-note.md) - x\n", repo.read("m/index.md"))
+            (repo.root / "okf.toml").write_text('bundles = ["m"]\nrequired = ["description"]\n')
+            code, out = repo.run("--check")
+            self.assertNotEqual(code, 0)
+            self.assertIn("must include type", out)
+        finally:
+            repo.close()
+
     def test_hand_written_index_is_kept_and_reported(self):
         repo = Repo({"docs/index.md": "# My own list\n", "docs/a.md": doc("Plan", "A", "x")})
         try:

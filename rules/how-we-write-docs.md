@@ -39,7 +39,7 @@ status: stable
 - Never edit `index.md` by hand. Run `python3 scripts/okf_index.py` after adding or changing a doc, and commit the index with the doc.
 - `python3 scripts/okf_index.py --check` fails on a missing header or an out-of-date index. Every repo runs it in its checks and CI.
 - `python3 scripts/okf_index.py --add-headers` fills missing headers from the folder, first heading and first line. Read what it wrote before you commit.
-- A repo says which folders are docs in `okf.toml` (`bundles`, `skip`, `exempt`, `[types]`). `also_read_under = "metadata"` is only for folders whose header a tool rewrites (Claude Code's memory writer moves extra keys under `metadata:`). The script is `scripts/okf_index.py` in agent-starter; copy it, do not fork it.
+- A repo says which folders are docs in `okf.toml` (`bundles`, `skip`, `exempt`, `[types]`). `also_read_under = "metadata"` is only for folders whose header a tool rewrites (Claude Code's memory writer moves extra keys under `metadata:`); such a folder may also set `required = ["type", "description"]` so the title comes from the file name. The script is `scripts/okf_index.py` in agent-starter; copy it, do not fork it.
 - `README.md` stays the human front page of a folder. `index.md` is the agent list. Both can exist.
 - `AGENTS.md` points agents to the root `index.md`.
 

@@ -16,6 +16,7 @@ Settings live in `okf.toml` at the repo root (all optional):
     skip = ["docs/archive/**"]    # paths left out of headers and indexes
     exempt = ["MEMORY.md"]        # file names that need no header and are not listed
     also_read_under = "metadata"  # only when a tool owns the header and nests extra keys there
+    required = ["type", "description"]  # default: type, title, description; title then comes from the file name
     [types]                       # default `type` per folder, for --add-headers
     "docs/learn" = "Teaching Note"
 
@@ -105,6 +106,7 @@ class Settings:
     skip: list[str] = field(default_factory=list)
     exempt: list[str] = field(default_factory=list)
     types: dict[str, str] = field(default_factory=dict)
+    required: tuple[str, ...] = REQUIRED
     nested: str = ""  # also read type/title/description under this key (a tool that owns the header nests them)
 
 
@@ -118,6 +120,9 @@ def load_settings(root: pathlib.Path) -> Settings:
         s.exempt = list(data.get("exempt", []))
         s.types = dict(data.get("types", {}))
         s.nested = str(data.get("also_read_under", ""))
+        s.required = tuple(data.get("required", REQUIRED))
+        if "type" not in s.required:
+            raise SystemExit("okf.toml: `required` must include type (OKF v0.2 needs it)")
     return s
 
 
@@ -244,7 +249,7 @@ def header_problems(s: Settings) -> list[str]:
                 out.append(f"{rel(s, p)}: no header (start the file with --- type, title, description ---)")
                 continue
             where = f"top-level or under `{s.nested}`" if s.nested else "top-level"
-            for k in REQUIRED:
+            for k in s.required:
                 if not value(s, h, k):
                     out.append(f"{rel(s, p)}: header has no {where} `{k}`")
     return out
