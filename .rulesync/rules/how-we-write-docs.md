@@ -1,0 +1,1 @@
+../../rules/how-we-write-docs.md
