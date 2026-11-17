@@ -139,6 +139,20 @@ class Headers(unittest.TestCase):
         finally:
             repo.close()
 
+    def test_also_read_under_reads_a_tool_owned_header(self):
+        # Claude Code's memory writer moves extra keys under metadata:
+        note = "---\nname: a\ndescription: x\nmetadata:\n  type: feedback\n  title: A note\n---\nBody.\n"
+        repo = Repo({"m/a.md": note}, config='bundles = ["m"]\nalso_read_under = "metadata"\n')
+        try:
+            repo.run()
+            code, out = repo.run("--check")
+            self.assertEqual(code, 0, out)
+            self.assertIn("# feedback\n\n* [A note](a.md) - x\n", repo.read("m/index.md"))
+            repo.run("--add-headers")
+            self.assertEqual(repo.read("m/a.md"), note)  # nothing added: the values are there
+        finally:
+            repo.close()
+
     def test_hand_written_index_is_kept_and_reported(self):
         repo = Repo({"docs/index.md": "# My own list\n", "docs/a.md": doc("Plan", "A", "x")})
         try:

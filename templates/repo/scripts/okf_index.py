@@ -15,6 +15,7 @@ Settings live in `okf.toml` at the repo root (all optional):
     bundles = ["docs"]            # folders that hold docs ("." for the whole repo)
     skip = ["docs/archive/**"]    # paths left out of headers and indexes
     exempt = ["MEMORY.md"]        # file names that need no header and are not listed
+    also_read_under = "metadata"  # only when a tool owns the header and nests extra keys there
     [types]                       # default `type` per folder, for --add-headers
     "docs/learn" = "Teaching Note"
 
@@ -68,12 +69,17 @@ def read_header(text: str) -> Header | None:
     if end is None:
         return None
     fields: dict[str, str] = {}
+    parent = ""
     i = 1
     while i < end:
         m = KEY_RE.match(lines[i])
         i += 1
         if not m:
+            child = re.match(r"^\s+([A-Za-z_][\w-]*):\s+(\S.*)$", lines[i - 1])
+            if parent and child:  # one level of nesting, kept as "parent.child"
+                fields[f"{parent}.{child.group(1)}"] = _unquote(child.group(2))
             continue
+        parent = ""
         key, val = m.group(1), (m.group(2) or "").strip()
         if val.startswith(("|", ">")) and len(val) <= 2:
             parts = []
@@ -86,6 +92,7 @@ def read_header(text: str) -> Header | None:
             fields[key] = _unquote(val.split(" #")[0] if not val.startswith(("'", '"')) else val)
         else:
             fields[key] = ""  # a nested map or an empty value
+            parent = key
     return Header(fields, end)
 
 
@@ -98,6 +105,7 @@ class Settings:
     skip: list[str] = field(default_factory=list)
     exempt: list[str] = field(default_factory=list)
     types: dict[str, str] = field(default_factory=dict)
+    nested: str = ""  # also read type/title/description under this key (a tool that owns the header nests them)
 
 
 def load_settings(root: pathlib.Path) -> Settings:
@@ -109,6 +117,7 @@ def load_settings(root: pathlib.Path) -> Settings:
         s.skip = list(data.get("skip", []))
         s.exempt = list(data.get("exempt", []))
         s.types = dict(data.get("types", {}))
+        s.nested = str(data.get("also_read_under", ""))
     return s
 
 
@@ -168,10 +177,15 @@ def entry(name: str, link: str, desc: str) -> str:
     return f"* [{name}]({link})" + (f" - {desc}" if desc else "") + "\n"
 
 
-def doc_title(p: pathlib.Path, h: Header | None, text: str) -> str:
-    if h and h.fields.get("title"):
-        return _one_line(h.fields["title"])
-    return guess_title(p, text)
+def value(s: Settings, h: Header | None, key: str) -> str:
+    """A header value: top level first, then under `also_read_under` when set."""
+    if h is None:
+        return ""
+    return h.fields.get(key) or (h.fields.get(f"{s.nested}.{key}", "") if s.nested else "")
+
+
+def doc_title(s: Settings, p: pathlib.Path, h: Header | None, text: str) -> str:
+    return _one_line(value(s, h, "title")) or guess_title(p, text)
 
 
 def render_index(s: Settings, d: pathlib.Path, docs, subs, counts, bundle_root: bool) -> str:
@@ -179,12 +193,11 @@ def render_index(s: Settings, d: pathlib.Path, docs, subs, counts, bundle_root: 
     for p in docs:
         text = p.read_text(errors="replace")
         h = read_header(text)
-        f = h.fields if h else {}
-        desc = _one_line(f.get("description", ""))
-        if f.get("status") == "deprecated":
+        desc = _one_line(value(s, h, "description"))
+        if value(s, h, "status") == "deprecated":
             desc = f"{desc} (deprecated)".strip()
-        groups.setdefault(_one_line(f.get("type", "")) or DEFAULT_TYPE, []).append(
-            entry(doc_title(p, h, text), p.name, desc))
+        groups.setdefault(_one_line(value(s, h, "type")) or DEFAULT_TYPE, []).append(
+            entry(doc_title(s, p, h, text), p.name, desc))
     out = []
     if bundle_root:
         out.append(f'---\nokf_version: "{OKF_VERSION}"\n---\n')
@@ -196,7 +209,7 @@ def render_index(s: Settings, d: pathlib.Path, docs, subs, counts, bundle_root: 
         for c in subs:
             readme = c / "README.md"
             h = read_header(readme.read_text(errors="replace")) if is_doc(s, readme) else None
-            desc = _one_line(h.fields.get("description", "")) if h else ""
+            desc = _one_line(value(s, h, "description"))
             n = counts[c]
             lines.append(entry(c.name, c.name + "/", desc or f"{n} document{'s' if n != 1 else ''}"))
         out.append("\n# Folders\n\n" + "".join(lines))
@@ -230,9 +243,10 @@ def header_problems(s: Settings) -> list[str]:
             if h is None:
                 out.append(f"{rel(s, p)}: no header (start the file with --- type, title, description ---)")
                 continue
+            where = f"top-level or under `{s.nested}`" if s.nested else "top-level"
             for k in REQUIRED:
-                if not h.fields.get(k):
-                    out.append(f"{rel(s, p)}: header has no top-level `{k}`")
+                if not value(s, h, k):
+                    out.append(f"{rel(s, p)}: header has no {where} `{k}`")
     return out
 
 
@@ -340,7 +354,9 @@ def add_header(s: Settings, p: pathlib.Path) -> bool:
     text = p.read_text(errors="replace")
     nl = "\r\n" if "\r\n" in text else "\n"
     h = read_header(text)
-    have = h.fields if h else {}
+    have = {k: value(s, h, k) for k in REQUIRED}
+    # a key that exists at the top level but is empty (a nested map) is not written twice
+    taken = {k for k in REQUIRED if h is not None and k in h.fields and not h.fields[k]}
     new = []
     if not have.get("type"):
         new.append(f"type: {default_type(s, p)}")
@@ -354,11 +370,8 @@ def add_header(s: Settings, p: pathlib.Path) -> bool:
         text = nl.join(["---", *new, "---", ""]) + text.lstrip("﻿")
     else:
         lines = text.lstrip("﻿").split(nl)
-        # a key that exists but is empty (a nested map such as `metadata:`) is not touched;
         # a missing key goes right after the opening ---
-        for k in REQUIRED:
-            if k in have and not have[k]:
-                new = [n for n in new if not n.startswith(k + ":")]
+        new = [n for n in new if n.split(":", 1)[0] not in taken]
         lines[1:1] = new
         text = nl.join(lines)
     p.write_text(text)
