@@ -168,6 +168,15 @@ class Headers(unittest.TestCase):
         finally:
             repo.close()
 
+    def test_add_headers_skips_title_when_not_required(self):
+        note = "---\ntype: feedback\ndescription: x\n---\nBody.\n"
+        repo = Repo({"m/a.md": note}, config='bundles = ["m"]\nrequired = ["type", "description"]\n')
+        try:
+            repo.run("--add-headers")
+            self.assertEqual(repo.read("m/a.md"), note)
+        finally:
+            repo.close()
+
     def test_hand_written_index_is_kept_and_reported(self):
         repo = Repo({"docs/index.md": "# My own list\n", "docs/a.md": doc("Plan", "A", "x")})
         try:

@@ -123,7 +123,7 @@ done < <(own_files)
 # --- Nothing private or secret anywhere (public repo) ---
 LEAK='/Users/|/home/[a-z]|~/ws/|mycdb|nvapi-|sk-[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{35}|BEGIN [A-Z ]*PRIVATE KEY|@gmail\.com'
 private_hits=$(grep -rIl -E "$LEAK" \
-  --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.superpowers --exclude=check.sh . 2>/dev/null)
+  --exclude-dir=.git --exclude=.git --exclude-dir=node_modules --exclude-dir=.superpowers --exclude=check.sh . 2>/dev/null)
 [ -z "$private_hits" ] || fail "private path or secret in: $(echo $private_hits)"
 
 # The leak pattern must catch common key shapes. Fixtures are built at run time
@@ -138,7 +138,15 @@ done
 
 # --- Commit history: no personal email ---
 if git rev-parse HEAD >/dev/null 2>&1; then
-  bad_ids=$(git log --format='%ae%n%ce' | grep -v -E 'users\.noreply\.github\.com$|^noreply@anthropic\.com$' | sort -u)
+  # Two old commits carry a personal author email. Published history is never rewritten,
+  # so they are listed here by hash; any other commit with one fails.
+  # GitHub writes noreply@github.com as the committer of web and gh merges: not personal.
+  known_old="1fc77d562c0218fa5330987a6e5eb68585c1bd00 b396077a418279596aab264a0911fabc94bd1eda"
+  bad_ids=$(git log --format='%H %ae %ce' | while read -r h ae ce; do
+    if echo " $known_old " | grep -q " $h "; then continue; fi
+    echo "$ae" | grep -q -E 'users\.noreply\.github\.com$|^noreply@anthropic\.com$' || echo "$h author"
+    echo "$ce" | grep -q -E 'users\.noreply\.github\.com$|^noreply@anthropic\.com$|^noreply@github\.com$' || echo "$h committer"
+  done | sort -u)
   [ -z "$bad_ids" ] || fail "commit history carries a personal email: $bad_ids"
 fi
 
