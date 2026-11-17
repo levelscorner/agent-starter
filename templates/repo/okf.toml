@@ -1,0 +1,7 @@
+# Docs readable by agents, in Google's Open Knowledge Format v0.2.
+# See agent-starter rules/how-we-write-docs.md.
+bundles = ["docs"]
+skip = []
+
+[types]
+"docs" = "Design Note"

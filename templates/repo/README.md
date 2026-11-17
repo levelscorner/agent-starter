@@ -14,6 +14,7 @@
 |---|---|
 | How to work here (people and agents) | [AGENTS.md](AGENTS.md) |
 | What is happening now | [STATE.md](STATE.md) |
+| Every doc, one line each | [docs/index.md](docs/index.md) |
 | How the code is laid out | [docs/architecture.md](docs/architecture.md) |
 | Retired files | [archive/](archive/) |
 | <fill: other docs, e.g. runbooks, schema> | <fill: path> |

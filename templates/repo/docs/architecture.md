@@ -1,3 +1,8 @@
+---
+type: Architecture
+title: Architecture
+description: "<fill: one sentence on how the code is laid out>"
+---
 # Architecture
 
 For anyone new, person or agent. Plain words, one picture.

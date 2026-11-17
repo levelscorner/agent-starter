@@ -4,7 +4,7 @@
 
 Give this to any agent:
 
-> Create a private GitHub repo named `<name>`. Copy everything in agent-starter's `templates/repo/` into it. Then fill in README.md, AGENTS.md, STATE.md and docs/architecture.md for this project: `<one line on what it does>`. Replace every `<fill: ...>` marker. Commit as `chore: start from agent-starter template`.
+> Create a private GitHub repo named `<name>`. Copy everything in agent-starter's `templates/repo/` into it. Then fill in README.md, AGENTS.md, STATE.md and docs/architecture.md (its header too) for this project: `<one line on what it does>`. Replace every `<fill: ...>` marker. Run `python3 scripts/okf_index.py`. Commit as `chore: start from agent-starter template`.
 
 ## What the agent runs
 
@@ -13,7 +13,8 @@ gh repo create <name> --private --clone
 cp -R agent-starter/templates/repo/. <name>/
 cd <name>
 # fill the files, then:
-git add README.md AGENTS.md CLAUDE.md STATE.md docs/architecture.md archive/README.md
+python3 scripts/okf_index.py   # writes docs/index.md from the doc headers
+git add README.md AGENTS.md CLAUDE.md STATE.md okf.toml scripts/okf_index.py docs/architecture.md docs/index.md archive/README.md
 git commit -m "chore: start from agent-starter template"
 git push -u origin main
 ```
