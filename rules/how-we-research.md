@@ -18,6 +18,8 @@ For any answer that depends on looking something up: docs, prices, repos, papers
 3. **Never guess or rebuild a URL.** Cite only links you actually opened. If you lost the link, say "source not kept".
 4. **Read a full source only to settle a specific doubt.** Summaries and search results are fine for orientation. Open the full text when a conclusion depends on one claim.
 5. **Video claims carry a timestamp** as `MM:SS`. Sampling tools can miss fast cuts, so say how the video was read.
+6. **Read what is already written before writing your own.** Before drafting a checklist, a standard, a design or advice, search the installed skills and the repo's docs for it. In Claude Code: `find ~/.claude/skills ~/.claude/plugins -name SKILL.md`, then read the ones whose description fits. Build from them and name each one you used. Where a skill disagrees with the repo's rules, say so; the repo wins. Do this at the start of a task and when the problem changes, not on every reply.
+7. **Ask the question under an either/or.** Before offering "A or B?", write the need both options serve ("what must stay safe?"). If both can be true for different jobs, say that instead of making the reader pick.
 
 ## How to report
 
