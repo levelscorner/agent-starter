@@ -20,6 +20,17 @@ This applies to every new feature, in every repo and every session. It applies w
 
 Every later triage of the same feature starts again at step 1: read the documents, then update them.
 
+## 1b. Every ticket: understand, research, decide, then build
+
+Before any code for a ticket, the first message on it is this step, not code:
+
+1. **What it is, technically:** the parts it touches, in plain words, taught as if the owner is seeing it for the first time.
+2. **Research 2 or 3 ways:** from primary sources (docs, the repo, papers), each with its date. Label every claim measured, seen, research, guess or not known.
+3. **The pick and why:** the pick first, one line of why, what each other way would cost, a before and after example, and a small picture.
+4. **Discuss, then decide:** code starts only after the owner says go, or picks another way.
+
+Keep the research in the feature's plan folder so the next session can read it. One page, pick first: not a long survey.
+
 ## 2. The six documents
 
 | # | Document | What it answers |
