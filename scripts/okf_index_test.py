@@ -220,12 +220,12 @@ class AddHeaders(unittest.TestCase):
         self.assertEqual(okf.guess_description(text), "Quoted reason here.")
 
     def test_label_lines_in_a_list_are_skipped(self):
-        text = "# ADR-5: Keep a monolith\n\n- **Status:** accepted\n- **Date:** 2026-06-12\n\n## Context\n\nSplitting buys little. More.\n"
-        self.assertEqual(okf.guess_description(text), "Splitting buys little.")
+        text = "# ADR-5: Keep a monolith\n\n- **Status:** accepted\n- **Date:** 2026-06-12\n\n## Context\n\nSplitting into services buys us little today. More.\n"
+        self.assertEqual(okf.guess_description(text), "Splitting into services buys us little today.")
 
     def test_a_decision_or_summary_section_wins(self):
-        text = "# ADR-5\n\n## Context\n\nLong story here.\n\n## Decision\n\nKeep one app. Why below.\n"
-        self.assertEqual(okf.guess_description(text), "Keep one app.")
+        text = "# ADR-5\n\n## Context\n\nLong story here.\n\n## Decision\n\nKeep one app for the whole product. Why below.\n"
+        self.assertEqual(okf.guess_description(text), "Keep one app for the whole product.")
         text = "# Plan\n\nIntro line.\n\n## TL;DR\n\n- Ship it on Friday.\n"
         self.assertEqual(okf.guess_description(text), "Ship it on Friday.")
 
@@ -235,11 +235,42 @@ class AddHeaders(unittest.TestCase):
 
     def test_a_bold_phrase_without_a_colon_is_prose(self):
         text = "# T\n\n**As at 16 November 2026.** What the company can prove. More.\n"
-        self.assertEqual(okf.guess_description(text), "As at 16 November 2026.")
+        self.assertEqual(okf.guess_description(text), "As at 16 November 2026. What the company can prove.")
 
     def test_a_leading_date_is_dropped(self):
         text = "# T\n\n*2026-10-09. Competitor research. Companion to x.*\n"
-        self.assertEqual(okf.guess_description(text), "Competitor research.")
+        self.assertEqual(okf.guess_description(text), "Competitor research. Companion to x.")
+
+    def test_a_wrapped_label_paragraph_is_skipped(self):
+        text = "# T\n\n**Status:** approved 2026-11-04. No app code\nyet. More here.\n\nThe pipeline is built from parts.\n"
+        self.assertEqual(okf.guess_description(text), "The pipeline is built from parts.")
+
+    def test_abbreviations_do_not_end_a_sentence(self):
+        text = "# T\n\nWe track AI search (e.g. cite counts) by hand. Next.\n"
+        self.assertEqual(okf.guess_description(text), "We track AI search (e.g. cite counts) by hand.")
+
+    def test_a_very_short_sentence_takes_the_next_one(self):
+        text = "# T\n\nNo change. The schema stays as it is in doc 5. More.\n"
+        self.assertEqual(okf.guess_description(text), "No change. The schema stays as it is in doc 5.")
+
+    def test_a_trailing_colon_becomes_a_full_stop(self):
+        text = "# T\n\nEvery number has one of five labels:\n\n- seen\n"
+        self.assertEqual(okf.guess_description(text), "Every number has one of five labels.")
+
+    def test_a_short_meta_paragraph_is_passed_over(self):
+        text = "# T\n\nRead in full.\n\nThe graph runs each step once, in order.\n"
+        self.assertEqual(okf.guess_description(text), "The graph runs each step once, in order.")
+        self.assertEqual(okf.guess_description("# T\n\nOnly this.\n"), "Only this.")
+
+    def test_a_line_that_repeats_the_title_is_skipped(self):
+        text = "# Where does the server run?\n\nWhere does the server run?\n\nOn one Hetzner box in Germany, for now.\n"
+        self.assertEqual(okf.guess_description(text), "On one Hetzner box in Germany, for now.")
+
+    def test_a_short_dateline_sentence_is_dropped(self):
+        text = "# T\n\nWritten 2026-10-18 (run 5, sweep A). Horror works when the threat stays off screen.\n"
+        self.assertEqual(okf.guess_description(text), "Horror works when the threat stays off screen.")
+        text = "# T\n\nRead on 2026-11-16. Read-only.\n\nThe refine graph is the closest thing to an agent.\n"
+        self.assertEqual(okf.guess_description(text), "The refine graph is the closest thing to an agent.")
 
     def test_long_description_is_cut_at_a_sentence(self):
         long = "# T\n\n" + "First sentence is here. " + "word " * 80 + "\n"

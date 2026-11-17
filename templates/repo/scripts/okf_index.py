@@ -303,31 +303,70 @@ LIST_RE = re.compile(r"^([-*+]|\d+[.)])\s+")
 NOT_PROSE = ("#", "|", "---", "===", "<", "![")
 
 
-def _first_sentence(lines) -> str:
+DATE_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
+MIN_DESCRIPTION = 30  # a shorter first sentence ("No change.") takes the next one too
+SENTENCE_END_RE = re.compile(r"(?<!\be\.g)(?<!\bi\.e)(?<!\betc)(?<!\bvs)(?<!\bNo)(?<!\b[A-Z])[.!?](?=\s|$)")
+
+
+def _sentences(text: str):
+    start = 0
+    for m in SENTENCE_END_RE.finditer(text):
+        yield text[start:m.end()].strip()
+        start = m.end()
+    if text[start:].strip():
+        yield text[start:].strip()
+
+
+def _first_sentence(lines, skip: str = "") -> str:
+    """The first paragraph of at least MIN_DESCRIPTION characters, cut to a sentence or two.
+    A shorter one ("Read in full.") is used only when nothing longer follows."""
     lines = list(lines)
+    in_label = False
+    fallback = ""
     for i, line in enumerate(lines):
         bare = LIST_RE.sub("", line)  # drop a list marker
-        if (not bare or bare.startswith(NOT_PROSE) or LABEL_LINE_RE.match(bare)):
+        if not bare:
+            in_label = False
+            continue
+        if LABEL_LINE_RE.match(bare):
+            in_label = True  # skip the label line and its wrapped lines
+            continue
+        if in_label and not LIST_RE.match(line):
+            continue
+        in_label = False
+        if bare.startswith(NOT_PROSE):
             continue
         for nxt in lines[i + 1:]:  # a hard-wrapped paragraph continues on the next lines
             if not nxt or nxt.startswith(NOT_PROSE) or LIST_RE.match(nxt):
                 break
             bare += " " + nxt
-        d = re.sub(r"^\d{4}-\d{2}-\d{2}[.:]?\s+", "", _strip_md(bare))  # a leading date is not a summary
-        if not d:
+        text = re.sub(r"^\d{4}-\d{2}-\d{2}[.:]?\s+", "", _strip_md(bare))  # a leading date is not a summary
+        first = next(_sentences(text), "")
+        if len(first) <= 60 and DATE_RE.search(first):  # "Read on 2026-11-16." is a dateline, not a summary
+            text = text[len(first):].strip()
+        if not text or text.rstrip(".?!:") == skip.rstrip(".?!:"):
             continue
-        m = re.search(r"[.!?](\s|$)", d)  # OKF: one sentence
-        if m:
-            d = d[:m.start() + 1]
+        d = ""
+        for s in _sentences(text):  # OKF: one sentence, or two when the first is very short
+            if d and len(d) + len(s) + 1 > MAX_DESCRIPTION:
+                break
+            d = f"{d} {s}".strip()
+            if len(d) >= MIN_DESCRIPTION:
+                break
+        if d.endswith(":"):
+            d = d[:-1] + "."
         if len(d) > MAX_DESCRIPTION:
             d = d[:MAX_DESCRIPTION].rsplit(" ", 1)[0] + "..."
-        return d
-    return ""
+        if len(text) >= MIN_DESCRIPTION:
+            return d
+        fallback = fallback or d
+    return fallback
 
 
 def guess_description(text: str) -> str:
     """One sentence: from a Decision or Summary section if there is one, else the first prose line."""
     lines = list(_prose_lines(_body(text)))
+    title = next((_strip_md(l) for l in lines if re.match(r"^#\s+\S", l)), "")
     for i, line in enumerate(lines):
         if SUMMARY_HEADING_RE.match(line):
             section = []
@@ -335,10 +374,10 @@ def guess_description(text: str) -> str:
                 if nxt.startswith("#"):
                     break
                 section.append(nxt)
-            d = _first_sentence(section)
+            d = _first_sentence(section, title)
             if d:
                 return d
-    return _first_sentence(lines)
+    return _first_sentence(lines, title)
 
 
 def _yaml(v: str) -> str:
