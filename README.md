@@ -27,6 +27,7 @@ Write a rule once here. A sync tool (rulesync) turns it into each agent's own fi
 | `knowledge/` | Dated corrections agents keep getting wrong | When the topic comes up |
 | `.rulesync/` | The sync tool's config | When you run the sync |
 | `scripts/check.sh` | Checks this repo is complete and has nothing private in it | Before every commit |
+| `scripts/okf_index.py` | Writes and checks each docs folder's `index.md` (Google's OKF v0.2), so agents can find every doc | After adding or changing a doc |
 
 ## Sync your tools
 

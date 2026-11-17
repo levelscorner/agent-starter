@@ -20,7 +20,7 @@ done
 [ "$(cat CLAUDE.md 2>/dev/null)" = "@AGENTS.md" ] || fail "CLAUDE.md must be exactly @AGENTS.md"
 
 # --- Rules: present, short, linked from AGENTS.md ---
-for r in how-we-talk how-we-code how-we-research git security; do
+for r in how-we-talk how-we-code how-we-research how-we-write-docs git security; do
   f="rules/$r.md"
   if [ ! -f "$f" ]; then fail "missing $f"; continue; fi
   lines=$(wc -l < "$f" | tr -d ' ')
@@ -54,6 +54,12 @@ grep -q 'agent-starter' templates/repo/AGENTS.md 2>/dev/null || fail "templates/
 [ -f NEW-REPO.md ] || fail "missing NEW-REPO.md"
 grep -q 'gh repo create' NEW-REPO.md 2>/dev/null || fail "NEW-REPO.md must show the gh repo create command"
 grep -q 'templates/repo' NEW-REPO.md 2>/dev/null || fail "NEW-REPO.md must copy templates/repo"
+
+# --- Docs index (OKF v0.2): the script works, the template ships it and passes it ---
+python3 scripts/okf_index_test.py >/dev/null 2>&1 || fail "scripts/okf_index_test.py fails (run it to see why)"
+cmp -s scripts/okf_index.py templates/repo/scripts/okf_index.py || fail "templates/repo/scripts/okf_index.py differs from scripts/okf_index.py"
+[ -f templates/repo/okf.toml ] || fail "missing templates/repo/okf.toml"
+python3 scripts/okf_index.py --root templates/repo --check >/dev/null 2>&1 || fail "templates/repo fails okf_index.py --check"
 
 # --- Dated corrections: every entry starts with a date ---
 k=knowledge/what-models-get-wrong.md
