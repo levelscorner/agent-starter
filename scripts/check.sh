@@ -28,6 +28,16 @@ for r in how-we-talk how-we-code how-we-research how-we-write-docs git security;
   grep -q "($f)" AGENTS.md || fail "AGENTS.md does not link $f"
 done
 
+# --- Every rule reaches the sync: rules/<r>.md has a link in .rulesync/rules/ ---
+# A rule without the link is never copied to ~/.claude/rules and the other tools.
+# how-we-design is not synced yet: it is scoped to UI files, and syncing it is the owner's call.
+not_synced="how-we-design"
+for f in rules/*.md; do
+  r=$(basename "$f" .md)
+  case " $not_synced " in *" $r "*) continue ;; esac
+  [ -L ".rulesync/rules/$r.md" ] || fail "rules/$r.md has no link in .rulesync/rules/, so the sync never copies it"
+done
+
 # --- Skills: front matter and a credit line each ---
 for s in i-have-adhd antislop antislop-code antislop-copywriting antislop-human \
          antislop-layoutmobile antislop-ui karpathy-coding emil-design-eng break-ui find-skills \
@@ -80,7 +90,7 @@ if [ "${SKIP_SYNC:-0}" != "1" ] && [ -d node_modules/rulesync ]; then
   home=$(mktemp -d); repo=$(mktemp -d)
   printf 'keep me\n' > "$repo/AGENTS.md"
   HOME="$home" npx --no-install rulesync generate -s >/dev/null 2>&1 || fail "rulesync global generate failed"
-  for p in .claude/CLAUDE.md .claude/rules/how-we-talk.md .claude/skills/i-have-adhd/SKILL.md \
+  for p in .claude/CLAUDE.md .claude/rules/how-we-talk.md .claude/rules/how-we-write-docs.md .claude/skills/i-have-adhd/SKILL.md \
            .codex/AGENTS.md .agents/skills/antislop/SKILL.md .grok/AGENTS.md .grok/skills/karpathy-coding/SKILL.md \
            .cursor/skills/find-skills/SKILL.md .hermes/skills/break-ui/SKILL.md; do
     [ -e "$home/$p" ] || fail "rulesync did not write ~/$p"
