@@ -404,7 +404,7 @@ def add_header(s: Settings, p: pathlib.Path) -> bool:
     new = []
     if not have.get("type"):
         new.append(f"type: {default_type(s, p)}")
-    if not have.get("title"):
+    if not have.get("title") and "title" in s.required:
         new.append(f"title: {_yaml(guess_title(p, text))}")
     if not have.get("description"):
         new.append(f"description: {_yaml(guess_description(text) or guess_title(p, text))}")
