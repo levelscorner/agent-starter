@@ -233,6 +233,14 @@ class AddHeaders(unittest.TestCase):
         text = "# T\n\nThe first sentence runs\nonto a second line. Then more.\n"
         self.assertEqual(okf.guess_description(text), "The first sentence runs onto a second line.")
 
+    def test_a_bold_phrase_without_a_colon_is_prose(self):
+        text = "# T\n\n**As at 16 November 2026.** What the company can prove. More.\n"
+        self.assertEqual(okf.guess_description(text), "As at 16 November 2026.")
+
+    def test_a_leading_date_is_dropped(self):
+        text = "# T\n\n*2026-10-09. Competitor research. Companion to x.*\n"
+        self.assertEqual(okf.guess_description(text), "Competitor research.")
+
     def test_long_description_is_cut_at_a_sentence(self):
         long = "# T\n\n" + "First sentence is here. " + "word " * 80 + "\n"
         self.assertEqual(okf.guess_description(long), "First sentence is here.")

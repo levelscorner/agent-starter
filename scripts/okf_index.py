@@ -41,7 +41,7 @@ REQUIRED = ("type", "title", "description")
 DEFAULT_TYPE = "Document"
 MAX_DESCRIPTION = 200
 KEY_RE = re.compile(r"^([A-Za-z_][\w-]*):(?:\s+(.*))?$")
-LABEL_LINE_RE = re.compile(r"^(\*\*[^*]{1,30}:?\*\*:?|[A-Z][\w-]*( [\w-]+)?:)\s")  # "**Status:** accepted", "Date: 2026-11-17"
+LABEL_LINE_RE = re.compile(r"^(\*\*[^*]{1,30}:\*\*|\*\*[^*]{1,30}\*\*:|[A-Z][\w-]*( [\w-]+)?:)\s")  # "**Status:** accepted", "Date: 2026-11-17"
 
 
 # ---------- reading headers ----------
@@ -313,7 +313,7 @@ def _first_sentence(lines) -> str:
             if not nxt or nxt.startswith(NOT_PROSE) or LIST_RE.match(nxt):
                 break
             bare += " " + nxt
-        d = _strip_md(bare)
+        d = re.sub(r"^\d{4}-\d{2}-\d{2}[.:]?\s+", "", _strip_md(bare))  # a leading date is not a summary
         if not d:
             continue
         m = re.search(r"[.!?](\s|$)", d)  # OKF: one sentence
