@@ -1,7 +1,7 @@
 ---
 root: true
 targets: ["*"]
-description: "Shared rules from agent-starter: how we talk, code, research, write docs, use git and stay safe"
+description: "Shared rules from agent-starter: how we talk, code, research, design, write docs, use git and stay safe"
 globs: ["**/*"]
 cursor:
   alwaysApply: true
