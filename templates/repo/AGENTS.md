@@ -7,6 +7,8 @@ Read this first. It is a table of contents, not the whole book.
 Follow the agent-starter rules: how we talk, code, research, write docs, use git and stay safe.
 https://github.com/levelscorner/agent-starter/tree/main/rules
 
+First move in every session: run the agent-starter skill selector (`skills/skill-selector`) with the problem statement, then load only the top few skills it picks.
+
 ## This repo
 
 - What it is: <fill: one line>
