@@ -41,3 +41,10 @@ cursor:
 - A task lives in a GitHub issue. Take it by adding the label `in-progress` (create the label if the repo has none) and a comment: `claimed by <tool> <session>`.
 - Release it when the PR merges, or after 24 hours with no update anyone may take it.
 - A handoff is a comment on that issue: what is done, what is left, what to watch out for.
+- The owner's board (a command center page or tracker) gets a card only when the owner must act or decide: set `owner_action` (one plain line saying what to do) or `question` (options, a recommended pick and the cost of each). Everything else goes in the session's own docs or on GitHub. A card with neither is an error.
+
+## Who owns what
+
+- One bot can own a product. The Chotu bot owns all work on Chotu: its repos, the chotu.studio site and its infrastructure.
+- A bot that gets a request for a product it does not own hands it to the owning bot. It does not start the work itself.
+- A repo's `AGENTS.md` and `STATE.md` say what the repo is for and what is happening now. One home per fact: link to `STATE.md`, do not copy it.

@@ -20,12 +20,22 @@ done
 [ "$(cat CLAUDE.md 2>/dev/null)" = "@AGENTS.md" ] || fail "CLAUDE.md must be exactly @AGENTS.md"
 
 # --- Rules: present, short, linked from AGENTS.md ---
-for r in how-we-talk how-we-code how-we-research git security; do
+for r in how-we-talk how-we-code how-we-research how-we-write-docs git security; do
   f="rules/$r.md"
   if [ ! -f "$f" ]; then fail "missing $f"; continue; fi
   lines=$(wc -l < "$f" | tr -d ' ')
   [ "$lines" -le 120 ] || fail "$f has $lines lines (max 120)"
   grep -q "($f)" AGENTS.md || fail "AGENTS.md does not link $f"
+done
+
+# --- Every rule reaches the sync: rules/<r>.md has a link in .rulesync/rules/ ---
+# A rule without the link is never copied to ~/.claude/rules and the other tools.
+# A rule listed here is kept out of the sync on purpose (none today).
+not_synced=""
+for f in rules/*.md; do
+  r=$(basename "$f" .md)
+  case " $not_synced " in *" $r "*) continue ;; esac
+  [ -L ".rulesync/rules/$r.md" ] || fail "rules/$r.md has no link in .rulesync/rules/, so the sync never copies it"
 done
 
 # --- Skills: front matter and a credit line each ---
@@ -55,6 +65,12 @@ grep -q 'agent-starter' templates/repo/AGENTS.md 2>/dev/null || fail "templates/
 grep -q 'gh repo create' NEW-REPO.md 2>/dev/null || fail "NEW-REPO.md must show the gh repo create command"
 grep -q 'templates/repo' NEW-REPO.md 2>/dev/null || fail "NEW-REPO.md must copy templates/repo"
 
+# --- Docs index (OKF v0.2): the script works, the template ships it and passes it ---
+python3 scripts/okf_index_test.py >/dev/null 2>&1 || fail "scripts/okf_index_test.py fails (run it to see why)"
+cmp -s scripts/okf_index.py templates/repo/scripts/okf_index.py || fail "templates/repo/scripts/okf_index.py differs from scripts/okf_index.py"
+[ -f templates/repo/okf.toml ] || fail "missing templates/repo/okf.toml"
+python3 scripts/okf_index.py --root templates/repo --check >/dev/null 2>&1 || fail "templates/repo fails okf_index.py --check"
+
 # --- Dated corrections: every entry starts with a date ---
 k=knowledge/what-models-get-wrong.md
 if [ -f "$k" ]; then
@@ -74,7 +90,7 @@ if [ "${SKIP_SYNC:-0}" != "1" ] && [ -d node_modules/rulesync ]; then
   home=$(mktemp -d); repo=$(mktemp -d)
   printf 'keep me\n' > "$repo/AGENTS.md"
   HOME="$home" npx --no-install rulesync generate -s >/dev/null 2>&1 || fail "rulesync global generate failed"
-  for p in .claude/CLAUDE.md .claude/rules/how-we-talk.md .claude/skills/i-have-adhd/SKILL.md \
+  for p in .claude/CLAUDE.md .claude/rules/how-we-talk.md .claude/rules/how-we-write-docs.md .claude/rules/how-we-design.md .claude/skills/i-have-adhd/SKILL.md \
            .codex/AGENTS.md .agents/skills/antislop/SKILL.md .grok/AGENTS.md .grok/skills/karpathy-coding/SKILL.md \
            .cursor/skills/find-skills/SKILL.md .hermes/skills/break-ui/SKILL.md; do
     [ -e "$home/$p" ] || fail "rulesync did not write ~/$p"
@@ -107,7 +123,7 @@ done < <(own_files)
 # --- Nothing private or secret anywhere (public repo) ---
 LEAK='/Users/|/home/[a-z]|~/ws/|mycdb|nvapi-|sk-[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{35}|BEGIN [A-Z ]*PRIVATE KEY|@gmail\.com'
 private_hits=$(grep -rIl -E "$LEAK" \
-  --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.superpowers --exclude=check.sh . 2>/dev/null)
+  --exclude-dir=.git --exclude=.git --exclude-dir=node_modules --exclude-dir=.superpowers --exclude=check.sh . 2>/dev/null)
 [ -z "$private_hits" ] || fail "private path or secret in: $(echo $private_hits)"
 
 # The leak pattern must catch common key shapes. Fixtures are built at run time
@@ -122,7 +138,15 @@ done
 
 # --- Commit history: no personal email ---
 if git rev-parse HEAD >/dev/null 2>&1; then
-  bad_ids=$(git log --format='%ae%n%ce' | grep -v -E 'users\.noreply\.github\.com$|^noreply@anthropic\.com$' | sort -u)
+  # Two old commits carry a personal author email. Published history is never rewritten,
+  # so they are listed here by hash; any other commit with one fails.
+  # GitHub writes noreply@github.com as the committer of web and gh merges: not personal.
+  known_old="1fc77d562c0218fa5330987a6e5eb68585c1bd00 b396077a418279596aab264a0911fabc94bd1eda"
+  bad_ids=$(git log --format='%H %ae %ce' | while read -r h ae ce; do
+    if echo " $known_old " | grep -q " $h "; then continue; fi
+    echo "$ae" | grep -q -E 'users\.noreply\.github\.com$|^noreply@anthropic\.com$' || echo "$h author"
+    echo "$ce" | grep -q -E 'users\.noreply\.github\.com$|^noreply@anthropic\.com$|^noreply@github\.com$' || echo "$h committer"
+  done | sort -u)
   [ -z "$bad_ids" ] || fail "commit history carries a personal email: $bad_ids"
 fi
 

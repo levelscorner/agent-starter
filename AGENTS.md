@@ -8,9 +8,10 @@ Read this first. It is a table of contents, not the whole book.
 - [rules/how-we-code.md](rules/how-we-code.md): how to write and change code
 - [rules/how-we-research.md](rules/how-we-research.md): how to look things up and cite them
 - [rules/how-we-plan.md](rules/how-we-plan.md): the six documents and one checklist for every new feature
-- [rules/git.md](rules/git.md): commits, pull requests, never deleting
-- [rules/security.md](rules/security.md): secrets, input, public versus private
+- [rules/git.md](rules/git.md): commits, pull requests, never deleting, who owns what
+- [rules/security.md](rules/security.md): secrets, input, public versus private, deploys, transcripts
 - [rules/how-we-design.md](rules/how-we-design.md): the UI laws every screen follows, and how to check them
+- [rules/how-we-write-docs.md](rules/how-we-write-docs.md): every doc gets an agent header and an index line (Google's OKF v0.2); every plan gets an HTML page, every discussion gets captured
 
 ## Load when the task needs it
 
