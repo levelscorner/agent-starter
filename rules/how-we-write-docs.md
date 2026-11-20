@@ -54,3 +54,11 @@ status: stable
 - The header is there, the index is current, `--check` passes.
 - A plan, design or decision has its `page:` link.
 - The PR description says which docs it added or changed.
+
+## 5. Discussions get captured
+
+- A decision made in a call or a chat is not a record until it is written down. Add one line to the inbox of the owner's docs hub: calls, local Claude sessions and bot completions all use the same inbox.
+- Each line has a time, a source, a kind (decision, question, task, fact), a project and one sentence of text.
+- Weekly: a digest accounts for every note from the week. Each one is rolled in or carried forward with a reason. The no-loss check fails if one is missing or counted twice.
+- Monthly: a review compares active decisions with newer notes and flags contradictions. The owner settles them. A new decision supersedes the old one; the old one is marked `deprecated`, never deleted.
+- Agents add notes and draft digests. Only the owner's approved digest changes `STATE.md` or an ADR.
