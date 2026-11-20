@@ -71,6 +71,10 @@ cmp -s scripts/okf_index.py templates/repo/scripts/okf_index.py || fail "templat
 [ -f templates/repo/okf.toml ] || fail "missing templates/repo/okf.toml"
 python3 scripts/okf_index.py --root templates/repo --check >/dev/null 2>&1 || fail "templates/repo fails okf_index.py --check"
 
+# --- Skill selector: tests pass and the index parses ---
+python3 tools/select_skills_test.py >/dev/null 2>&1 || fail "tools/select_skills_test.py fails (run it to see why)"
+python3 -c 'import json,sys; json.load(open(sys.argv[1]))' skill-index/index.json 2>/dev/null || fail "skill-index/index.json is missing or not valid JSON"
+
 # --- Dated corrections: every entry starts with a date ---
 k=knowledge/what-models-get-wrong.md
 if [ -f "$k" ]; then
