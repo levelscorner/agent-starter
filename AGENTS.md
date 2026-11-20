@@ -2,6 +2,10 @@
 
 Read this first. It is a table of contents, not the whole book.
 
+## First move in every session
+
+Before loading any domain skill, run [skills/skill-selector](skills/skill-selector/SKILL.md) with the problem statement and load only the top few it picks.
+
 ## Always follow
 
 - [rules/how-we-talk.md](rules/how-we-talk.md): how to talk to people

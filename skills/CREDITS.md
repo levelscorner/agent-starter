@@ -29,3 +29,4 @@ Written in our own words, with a link in the file that uses them: ponytail, cave
 2. Re-apply our additions listed in `CHANGES.md`.
 3. Update the version in this table.
 4. Run `bash scripts/check.sh`.
+| skill-selector | ours | MIT (ours) | 1.0 | written by us |
